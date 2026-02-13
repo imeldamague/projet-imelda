@@ -1,0 +1,20 @@
+name: CD2 - Déploiement sur serveur Debian (NGINX)
+
+on:
+  workflow_run:
+    workflows: ["CI - Vérification HTML"]
+    types:
+      - completed
+
+jobs:
+  deploy-server:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: [self-hosted, Linux, X64]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Déployer index.html
+        run: |
+          sudo cp index.html /var/www/html/index.html
+          sudo systemctl reload nginx
